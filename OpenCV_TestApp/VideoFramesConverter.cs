@@ -7,13 +7,18 @@ using System.Threading.Tasks;
 
 namespace OpenCV_TestApp
 {
-	internal class VideoFramesConverter
+	class VideoFramesConverter
 	{
-		public void converter(String route)
+		public void Converter()
 		{
 			Console.WriteLine("Ingrese la ruta del video:");
 			string route = Console.ReadLine();
 
+			if(route == "" || route == null)
+			{
+				Console.WriteLine("No se ingreso una ruta valida.");
+				return;
+			}
 
 			using (var videoCapture = new VideoCapture(route))
 			{
