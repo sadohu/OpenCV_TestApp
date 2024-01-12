@@ -1,9 +1,10 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using OpenCV_TestApp;
 
-Console.WriteLine("Hello, World!");
+Console.WriteLine("Bienvenido a Digital Solutions 324 OpenCV test.");
 
-VideoFramesConverter videoConverter = new VideoFramesConverter();
-videoConverter.Converter();
+OpenCV openCV = new OpenCV();
+openCV.VideoFramesConverter();
+
 
 

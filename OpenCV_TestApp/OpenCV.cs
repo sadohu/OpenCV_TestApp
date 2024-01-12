@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace OpenCV_TestApp
 {
-	class VideoFramesConverter
+	class OpenCV
 	{
-		public void Converter()
+		public void VideoFramesConverter()
 		{
 			Console.WriteLine("Ingrese la ruta del video:");
 			string route = Console.ReadLine();
@@ -41,6 +41,7 @@ namespace OpenCV_TestApp
 					// Guardar cada frame como una imagen
 					Cv2.ImWrite($"E:/Files/workspace/Digital Solutions 324/frames/frame_{i}.jpg", frame);
 				}
+				Console.WriteLine("Se guardaron los frames.\n");
 			}
 		}
 	}
