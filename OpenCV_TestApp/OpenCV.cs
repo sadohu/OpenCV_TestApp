@@ -10,30 +10,20 @@ namespace OpenCV_TestApp
 	class OpenCV
 	{
 
-		public void VideoFramesConverter()
+		public void VideoFramesConverter(string route, int videoNumber)
 		{
-			// Ruta del video
-			// Console.WriteLine("Ingrese la ruta del video:");
-			// string videoPath = Console.ReadLine();
-			string videoPath = "E:/Files/workspace/Digital Solutions 324/sources/video7.mkv";
+			string videoPath = route;
 
-			if (string.IsNullOrEmpty(videoPath) || !File.Exists(videoPath))
-			{
-				Console.WriteLine("Ruta de video no válida.");
-				return;
-			}
 			// Ruta del proyecto
 			string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
 			string mainDirectory = Path.Combine(projectDirectory, "..", "..", "..");
 
 			// Carpeta para almacenar los frames
-			//string framesFolder = "E:/Files/workspace/Digital Solutions 324/frames/";
-			string framesFolder = Path.Combine(mainDirectory, "frames\\");
+			string framesFolder = Path.Combine(mainDirectory, videoNumber == 1 ? "frames\\" : "frames2\\");
 			Directory.CreateDirectory(framesFolder);
 
 			// Carpeta para almacenar los rostros
-			// string facesFolder = "E:/Files/workspace/Digital Solutions 324/faces/";
-			string facesFolder = Path.Combine(mainDirectory, "faces\\");
+			string facesFolder = Path.Combine(mainDirectory, videoNumber == 1 ? "faces\\" : "faces2\\");
 			Directory.CreateDirectory(facesFolder);
 
 			// Ruta del clasificador Haar para rostros
@@ -45,17 +35,10 @@ namespace OpenCV_TestApp
 				return;
 			}
 
-			string eyeCascadePath = "E:/Files/workspace/Digital Solutions 324/project/OpenCV_TestApp/OpenCV_TestApp/resources/haarcascade_eye.xml";
+			string eyeCascadePath = Path.Combine(mainDirectory, "resources\\haarcascade_eye.xml");
 			if (!File.Exists(eyeCascadePath))
 			{
 				Console.WriteLine("El archivo del clasificador Haar no existe en la ruta especificada.");
-				return;
-			}
-
-			string profileFaceCascadePath = "E:/Files/workspace/Digital Solutions 324/project/OpenCV_TestApp/OpenCV_TestApp/resources/haarcascade_profileface.xml";
-			if (!File.Exists(profileFaceCascadePath))
-			{
-				Console.WriteLine("El archivo del clasificador Haar para rostros de perfil no existe en la ruta especificada.");
 				return;
 			}
 
@@ -64,6 +47,8 @@ namespace OpenCV_TestApp
 			using (var faceCascade = new CascadeClassifier(faceCascadePath))
 			using (var eyeCascade = new CascadeClassifier(eyeCascadePath))
 			{
+				Console.WriteLine("Procesando video...");
+
 				if (!videoCapture.IsOpened())
 				{
 					Console.WriteLine("No se pudo abrir el video.");
@@ -135,92 +120,22 @@ namespace OpenCV_TestApp
 			}
 		}
 
-		public static void VideoFramesConverter2()
-		{
-			// Ruta del video
-			// Console.WriteLine("Ingrese la ruta del video:");
-			// string videoPath = Console.ReadLine();
-			string videoPath = "E:/Files/workspace/Digital Solutions 324/sources/video8.mkv";
-
-			if (string.IsNullOrEmpty(videoPath) || !File.Exists(videoPath))
-			{
-				Console.WriteLine("Ruta de video no válida.");
-				return;
-			}
-
-			// Carpeta para almacenar los frames
-			string framesFolder = "E:/Files/workspace/Digital Solutions 324/frames2/";
-			Directory.CreateDirectory(framesFolder); // Crear la carpeta si no existe
-
-			// Carpeta para almacenar los rostros
-			string facesFolder = "E:/Files/workspace/Digital Solutions 324/faces2/";
-			Directory.CreateDirectory(facesFolder); // Crear la carpeta si no existe
-
-			// Ruta del clasificador Haar para rostros
-			string faceCascadePath = "E:/Files/workspace/Digital Solutions 324/project/OpenCV_TestApp/OpenCV_TestApp/resources/haarcascade_frontalface_default.xml";
-			if (!File.Exists(faceCascadePath))
-			{
-				Console.WriteLine("El archivo del clasificador Haar no existe en la ruta especificada.");
-				return;
-			}
-
-			string eyeCascadePath = "E:/Files/workspace/Digital Solutions 324/project/OpenCV_TestApp/OpenCV_TestApp/resources/haarcascade_eye.xml";
-			if (!File.Exists(eyeCascadePath))
-			{
-				Console.WriteLine("El archivo del clasificador Haar no existe en la ruta especificada.");
-				return;
-			}
-
-			string profileFaceCascadePath = "E:/Files/workspace/Digital Solutions 324/project/OpenCV_TestApp/OpenCV_TestApp/resources/haarcascade_profileface.xml";
-			if (!File.Exists(profileFaceCascadePath))
-			{
-				Console.WriteLine("El archivo del clasificador Haar para rostros de perfil no existe en la ruta especificada.");
-				return;
-			}
-
-			// Inicializar capturador de video
-			using (var videoCapture = new VideoCapture(videoPath))
-			using (var faceCascade = new CascadeClassifier(faceCascadePath))
-			using (var eyeCascade = new CascadeClassifier(eyeCascadePath))
-			{
-				if (!videoCapture.IsOpened())
-				{
-					Console.WriteLine("No se pudo abrir el video.");
-					return;
-				}
-
-				int frameCount = (int)videoCapture.Get(VideoCaptureProperties.FrameCount);
-
-				// Procesar cada frame
-				for (int i = 0; i < frameCount; i++)
-				{
-					Mat frame = new Mat();
-					videoCapture.Read(frame);
-
-					if (frame.Empty())
-						break;
-
-					// Guardar cada frame como una imagen
-					string frameFilePath = Path.Combine(framesFolder, $"frame_{i}.jpg");
-					Cv2.ImWrite(frameFilePath, frame);
-
-					// Detectar rostros en el frame y guardarlos
-					DetectAndSaveFaces(faceCascade, eyeCascade, frame, facesFolder, i);
-				}
-
-				Console.WriteLine("Se guardaron los frames y se detectaron los rostros.\n");
-			}
-
-		}
-
 		public void CompareFacesAndSaveDifferences()
 		{
-			// Obtener la lista de archivos de rostros en ambas carpetas
-			string[] faceFilesVideo1 = Directory.GetFiles("E:/Files/workspace/Digital Solutions 324/faces/");
-			string[] faceFilesVideo2 = Directory.GetFiles("E:/Files/workspace/Digital Solutions 324/faces2/");
+			// Ruta del proyecto
+			string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
+			string mainDirectory = Path.Combine(projectDirectory, "..", "..", "..");
 
-			string outputFolder = "E:/Files/workspace/Digital Solutions 324/differences/";
-			Directory.CreateDirectory(outputFolder); // Crear la carpeta si no existe
+			// Carpeta para almacenar los rostros
+			string facesFolder = Path.Combine(mainDirectory, "faces");
+			Directory.CreateDirectory(facesFolder);
+
+			// Obtener la lista de archivos de rostros en ambas carpetas
+			string[] faceFilesVideo1 = Directory.GetFiles(facesFolder);
+			string[] faceFilesVideo2 = Directory.GetFiles(facesFolder + "2");
+
+			string outputFolder = Path.Combine(mainDirectory, "differences");
+			Directory.CreateDirectory(outputFolder);
 
 			// Comparar cada par de rostros
 			for (int i = 0; i < Math.Min(faceFilesVideo1.Length, faceFilesVideo2.Length); i++)
@@ -272,6 +187,9 @@ namespace OpenCV_TestApp
 				difference.SaveImage(outputFilePath);
 
 			}
+
+			Console.WriteLine("Se guardaron las diferencias entre los rostros.");
+			System.Diagnostics.Process.Start("explorer.exe", outputFolder);
 		}
 	}
 }
